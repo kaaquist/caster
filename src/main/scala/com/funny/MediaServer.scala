@@ -70,7 +70,7 @@ object MediaServer extends Media with LazyLogging {
   }
 
   def stopMedia(caster: Caster) = path("stopMedia") {
-    logger.info("Media Started")
+    logger.info("Media Stopped")
     get {
       if(caster.stopMediaOnCaster) {
         complete( StatusCodes.Accepted)
