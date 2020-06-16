@@ -30,4 +30,11 @@ TODOs:
  More google: https://developers.google.com/cast/v2/receiver_apps  
  Even more google: https://github.com/googlecast
  
- ChromeCast API: https://github.com/vitalidze/chromecast-java-api-v2
+ ChromeCast API: https://github.com/vitalidze/chromecast-java-api-v2  
+ 
+ VLCj: https://github.com/caprica/vlcj  
+ YouTube about VLCj: https://www.youtube.com/watch?v=XTQ1b3-TUI4  
+ VLCj app: https://github.com/ricky739996585/douyu
+
+ Shellpodd VLC cli: https://github.com/PetroSemeniuk/shellpodd/tree/9399d23440f8363775067103b055da762762145b
+ 
