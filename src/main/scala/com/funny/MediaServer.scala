@@ -1,14 +1,14 @@
 package com.funny
 
-import java.io.File
+import java.io.{File, PrintWriter, StringWriter}
 import java.nio.file.Paths
-
 import akka.actor.ActorSystem
+import akka.http.scaladsl.server.RouteResult
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.model.{ContentType, HttpEntity, MediaType, MediaTypes, StatusCodes}
 import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.Route
+import akka.http.scaladsl.server.{RequestContext, Route}
 import akka.http.scaladsl.server.Directives.complete
 import akka.stream.{ActorMaterializer, IOResult, Materializer}
 import akka.stream.scaladsl.{FileIO, Sink, Source}
@@ -17,6 +17,7 @@ import com.typesafe.scalalogging.LazyLogging
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, ExecutionContextExecutor, Future}
+import scala.util.{Failure, Success}
 
 
 sealed trait Media {
@@ -39,7 +40,7 @@ object MediaServer extends Media with LazyLogging {
     (mediaType, mediaFile)
   }
 
-  private def displayMedia = path("mediaStream") {
+  private def displayMedia: RequestContext => Future[RouteResult] = path("mediaStream") {
     get {
       val data = getMediaFile()
       val entity = HttpEntity(data._1, data._2)
@@ -48,7 +49,7 @@ object MediaServer extends Media with LazyLogging {
     }
   }
 
-  def loadMedia = path("loadMedia") {
+  def loadMedia: RequestContext => Future[RouteResult] = path("loadMedia") {
     logger.info("Media Loaded")
     post{
       val pathToFile: String = "/Users/kasper/Movies/BigBuckBunny.mp4"
@@ -57,7 +58,7 @@ object MediaServer extends Media with LazyLogging {
     }
   }
 
-  def startMedia(caster: Caster) = path("startMedia") {
+  def startMedia(caster: Caster): RequestContext => Future[RouteResult] = path("startMedia") {
     logger.info("Media Started")
     get {
       if(caster.loadMediaToCaster) {
@@ -69,7 +70,7 @@ object MediaServer extends Media with LazyLogging {
     }
   }
 
-  def stopMedia(caster: Caster) = path("stopMedia") {
+  def stopMedia(caster: Caster): RequestContext => Future[RouteResult] = path("stopMedia") {
     logger.info("Media Stopped")
     get {
       if(caster.stopMediaOnCaster) {
@@ -91,22 +92,28 @@ object MediaServer extends Media with LazyLogging {
     localIpAddress
   }
 
+
   def main(args: Array[String]) {
     val caster: Caster = new Caster()
     caster.initCaster
+    lazy val route: Route = concat(displayMedia, startMedia(caster), stopMedia(caster), loadMedia)
     implicit val system = ActorSystem("mediaServerSystem")
-    implicit val materializer = ActorMaterializer()
+    startServer(route)(system)
+  }
 
-    lazy val route: Route = displayMedia ~ startMedia(caster) ~ stopMedia(caster) ~ loadMedia
-
-    val serverSource = Http().bind(interface = conf.mediaServerConf.serverBindAddr, port = conf.mediaServerConf.serverPort)
-    val bindingFuture = serverSource.to(Sink.foreach { connection ⇒
-      logger.info("Accepted new connection from " + connection.remoteAddress)
-      connection handleWith route
-    }).run()
-    logger.info(s"Server online at http://${conf.mediaServerConf.serverBindAddr}:${conf.mediaServerConf.serverPort}/\n " +
-      s"Press RETURN to stop...")
-    scala.io.StdIn.readLine()
-    bindingFuture.flatMap(_.unbind()).onComplete(_ => system.terminate())
+  private def  startServer(routes: Route)(implicit system: ActorSystem): Unit = {
+    implicit val ec: ExecutionContextExecutor = system.dispatcher
+    logger.debug(s"Callback server about to start.")
+    val futureBinding = Http().newServerAt(conf.mediaServerConf.serverBindAddr, conf.mediaServerConf.serverPort).bind(routes)
+    futureBinding.onComplete {
+      case Success(binding) =>
+        val address = binding.localAddress
+        logger.info(s"Server online at http://${address.getHostString}:${address.getPort}/")
+      case Failure(ex) =>
+        val sw = new StringWriter
+        ex.printStackTrace(new PrintWriter(sw))
+        logger.error(s"Failed to bind HTTP endpoint, terminating system. \n Exception: ${sw.toString}")
+        system.terminate()
+    }
   }
 }
