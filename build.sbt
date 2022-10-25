@@ -10,7 +10,7 @@ libraryDependencies ++= {
   val akkaVersion = "2.6.1"
   val akkaHttpVersion = "10.2.2"
   Seq (
-    "su.litvak.chromecast"                        % "api-v2"                            % "0.11.2",
+    "su.litvak.chromecast"                        % "api-v2"                            % "0.11.3",
     // This here is bumped down since there are errors if they are too new. The `java.lang.VerifyError` error will be there.
     // Might be avoided if we build the chromecast jar with the same javac as the other packages.
     "com.typesafe.akka"                           %% "akka-http"                        % akkaHttpVersion,
