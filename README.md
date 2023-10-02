@@ -14,10 +14,9 @@ TODOs:
  * [ ] Choose between Chromecasts that gets discovered on LAN.
  * [ ] Use encode/decoder library to convert other video standards to MP4 stream.
  * [ ] Use tika or its like to auto detect the media loaded. 
- * [ ] Create other receiver App then the Default Media Receiver.
+ * [ ] Create another receiver App then the Default Media Receiver.
  * [ ] Clean up code (this will probably never happen)
  * [ ] Not sure we need all that try catch on play/stop/load functions. 
- * [ ] la la la
  
  
  ## Useful links (?):
@@ -37,4 +36,3 @@ TODOs:
  VLCj app: https://github.com/ricky739996585/douyu
 
  Shellpodd VLC cli: https://github.com/PetroSemeniuk/shellpodd/tree/9399d23440f8363775067103b055da762762145b
- 
