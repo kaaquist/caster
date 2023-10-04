@@ -30,13 +30,13 @@ object MediaServer extends Media with LazyLogging {
   var mediaFile: Source[ByteString, Future[IOResult]] = null
   var mediaType: ContentType = null
 
-  def setMediaFile(pathToFile: String = "/Users/kasper/Movies/BigBuckBunny.mp4"): Unit = {
+  private def setMediaFile(pathToFile: String = "src/main/resources/sample.mp4"): Unit = {
     mediaFile = FileIO.fromPath(Paths.get(pathToFile))
     mediaType = MediaTypes.`video/mp4`.toContentType
     logger.info("Media File set")
   }
 
-  def getMediaFile(): (ContentType, Source[ByteString, Future[IOResult]]) = {
+  private def getMediaFile(): (ContentType, Source[ByteString, Future[IOResult]]) = {
     (mediaType, mediaFile)
   }
 
@@ -49,16 +49,16 @@ object MediaServer extends Media with LazyLogging {
     }
   }
 
-  def loadMedia: RequestContext => Future[RouteResult] = path("loadMedia") {
+  private def loadMedia: RequestContext => Future[RouteResult] = path("loadMedia") {
     logger.info("Media Loaded")
     post{
-      val pathToFile: String = "/Users/kasper/Movies/BigBuckBunny.mp4"
+      val pathToFile: String = "src/main/resources/BigBuckBunny.mp4"
       setMediaFile(pathToFile)
       complete( StatusCodes.Accepted)
     }
   }
 
-  def startMedia(caster: Caster): RequestContext => Future[RouteResult] = path("startMedia") {
+  private def startMedia(caster: Caster): RequestContext => Future[RouteResult] = path("startMedia") {
     logger.info("Media Started")
     get {
       if(caster.loadMediaToCaster) {
@@ -70,7 +70,7 @@ object MediaServer extends Media with LazyLogging {
     }
   }
 
-  def stopMedia(caster: Caster): RequestContext => Future[RouteResult] = path("stopMedia") {
+  private def stopMedia(caster: Caster): RequestContext => Future[RouteResult] = path("stopMedia") {
     logger.info("Media Stopped")
     get {
       if(caster.stopMediaOnCaster) {
