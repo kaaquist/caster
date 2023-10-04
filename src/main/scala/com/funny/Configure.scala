@@ -11,7 +11,7 @@ case class Configure() extends LazyLogging {
 
   implicit def hint[T]: ProductHint[T] = ProductHint[T](ConfigFieldMapping(CamelCase, SnakeCase))
 
-  lazy val prefixRoot = "funny"
+  private lazy val prefixRoot = "funny"
 
   lazy val mediaServerConf: MediaServerConf = pureconfig.loadConfigOrThrow[MediaServerConf](s"$prefixRoot.mediaServer")
 
