@@ -8,7 +8,8 @@ import pureconfig.generic.auto._
 case class Configure() extends LazyLogging {
 
   import Configure._
-  implicit def hint[T] = ProductHint[T](ConfigFieldMapping(CamelCase, SnakeCase))
+
+  implicit def hint[T]: ProductHint[T] = ProductHint[T](ConfigFieldMapping(CamelCase, SnakeCase))
 
   lazy val prefixRoot = "funny"
 

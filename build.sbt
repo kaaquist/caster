@@ -4,7 +4,7 @@ organization := "com.funny"
 
 version := "0.0.1"
 
-scalaVersion := "2.12.8"
+scalaVersion := "2.13.12"
 
 libraryDependencies ++= {
   val akkaVersion = "2.6.1"
@@ -21,3 +21,4 @@ libraryDependencies ++= {
     "com.github.pureconfig"                       %% "pureconfig"                       % "0.11.1",
     "org.apache.tika"                             % "tika-parsers"                      % "1.21",
   )}
+scalacOptions ++= Seq("-Ymacro-annotations", "-Xfatal-warnings", "-deprecation", "-unchecked", "-encoding", "utf8"),
