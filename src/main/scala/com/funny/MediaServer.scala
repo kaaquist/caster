@@ -93,7 +93,7 @@ object MediaServer extends Media with LazyLogging {
   }
 
 
-  def main(args: Array[String]) {
+  def main(args: Array[String]): Unit = {
     val caster: Caster = new Caster()
     caster.initCaster
     lazy val route: Route = concat(displayMedia, startMedia(caster), stopMedia(caster), loadMedia)

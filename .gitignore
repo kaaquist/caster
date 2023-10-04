@@ -28,6 +28,7 @@ data/
 build/
 bin/
 target/
+.bsp/
 
 # List
 *.list
